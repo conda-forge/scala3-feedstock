@@ -38,21 +38,25 @@ tee ${PREFIX}/bin/common << EOF
 #!/bin/sh
 exec \${CONDA_PREFIX}/libexec/scala3/bin/common "\$@"
 EOF
+chmod +x ${PREFIX}/bin/common
 
 tee ${PREFIX}/bin/scala << EOF
 #!/bin/sh
 exec \${CONDA_PREFIX}/libexec/scala3/bin/scala "\$@"
 EOF
+chmod +x ${PREFIX}/bin/scala
 
 tee ${PREFIX}/bin/scalac << EOF
 #!/bin/sh
 exec \${CONDA_PREFIX}/libexec/scala3/bin/scalac "\$@"
 EOF
+chmod +x ${PREFIX}/bin/scalac
 
 tee ${PREFIX}/bin/scaladoc << EOF
 #!/bin/sh
 exec \${CONDA_PREFIX}/libexec/scala3/bin/scaladoc "\$@"
 EOF
+chmod +x ${PREFIX}/bin/scaladoc
 
 tee ${PREFIX}/bin/common.cmd << EOF
 call %CONDA_PREFIX%\libexec\scala3\bin\common.bat %*
