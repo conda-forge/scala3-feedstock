@@ -3,7 +3,7 @@ About scala3-feedstock
 
 Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/scala3-feedstock/blob/main/LICENSE.txt)
 
-Home: https://dotty.epfl.ch
+Home: https://dotty.epfl.ch/
 
 Package license: Apache-2.0
 
