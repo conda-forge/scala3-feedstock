@@ -2,74 +2,27 @@
 
 set -o xtrace -o nounset -o pipefail -o errexit
 
-# Declare function for downloading licenses associated with each pom.xml using maven
-download_licenses() {
-    pom_file=$1
-    pom_xml=$(dirname ${pom_file})/pom.xml
-    mv ${pom_file} ${pom_xml}
-    sed -i 's:[\+|\-].*\-SNAPSHOT.*</version>:</version>:g' ${pom_xml}
-    pushd $(dirname ${pom_xml})
-    mvn license:download-licenses -Dgoal=download-licenses
-    popd
-}
-
-export -f download_licenses
-
 # Build JAR files with sbt
-sbt dist/packArchive
+sbt dist/Universal/packageBin
 
 # Create pom.xml files so maven can be used to download licenses
 sbt makePom
-find -name "*.pom" | xargs -I % bash -c 'download_licenses %'
+
 mkdir -p ${SRC_DIR}/target/generated-resources/licenses
-find -type d -name "licenses" | grep generated-resources | grep -v "^./target" | xargs -I % bash -c 'cp %/* ./target/generated-resources/licenses'
+pom_file=$(find -name scala3_3-${PKG_VERSION}-bin-SNAPSHOT-nonbootstrapped.pom)
+pushd $(dirname ${pom_file})
+    mv scala3_3-${PKG_VERSION}-bin-SNAPSHOT-nonbootstrapped.pom pom.xml
+    sed -i 's/-bin-SNAPSHOT-nonbootstrapped//' pom.xml
+    mvn license:download-licenses -Dgoal=download-licenses
+    cp ./target/generated-resources/licenses/* ${SRC_DIR}/target/generated-resources/licenses
+popd
 
 # Install JAR files
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/libexec/${PKG_NAME}
 
-mv dist/target/scala3-${PKG_VERSION}-bin-SNAPSHOT.tar.gz .
-tar xzf scala3-${PKG_VERSION}-bin-SNAPSHOT.tar.gz
-cp -r scala3-${PKG_VERSION}-bin-SNAPSHOT/bin ${PREFIX}/libexec/${PKG_NAME}
-cp -r scala3-${PKG_VERSION}-bin-SNAPSHOT/lib ${PREFIX}/libexec/${PKG_NAME}
-
-# Create bash and batch wrappers
-tee ${PREFIX}/bin/common << EOF
-#!/bin/sh
-exec \${CONDA_PREFIX}/libexec/scala3/bin/common "\$@"
-EOF
-chmod +x ${PREFIX}/bin/common
-
-tee ${PREFIX}/bin/scala << EOF
-#!/bin/sh
-exec \${CONDA_PREFIX}/libexec/scala3/bin/scala "\$@"
-EOF
-chmod +x ${PREFIX}/bin/scala
-
-tee ${PREFIX}/bin/scalac << EOF
-#!/bin/sh
-exec \${CONDA_PREFIX}/libexec/scala3/bin/scalac "\$@"
-EOF
-chmod +x ${PREFIX}/bin/scalac
-
-tee ${PREFIX}/bin/scaladoc << EOF
-#!/bin/sh
-exec \${CONDA_PREFIX}/libexec/scala3/bin/scaladoc "\$@"
-EOF
-chmod +x ${PREFIX}/bin/scaladoc
-
-tee ${PREFIX}/bin/common.cmd << EOF
-call %CONDA_PREFIX%\libexec\scala3\bin\common.bat %*
-EOF
-
-tee ${PREFIX}/bin/scala.cmd << EOF
-call %CONDA_PREFIX%\libexec\scala3\bin\scala.bat %*
-EOF
-
-tee ${PREFIX}/bin/scalac.cmd << EOF
-call %CONDA_PREFIX%\libexec\scala3\bin\scalac.bat %*
-EOF
-
-tee ${PREFIX}/bin/scaladoc.cmd << EOF
-call %CONDA_PREFIX%\libexec\scala3\bin\scaladoc.bat %*
-EOF
+mv dist/target/universal/scala3-${PKG_VERSION}-bin-SNAPSHOT.zip .
+unzip scala3-${PKG_VERSION}-bin-SNAPSHOT.zip
+cp -r scala3-${PKG_VERSION}-bin-SNAPSHOT/* ${PREFIX}/libexec/${PKG_NAME}
+rm -rf ${PREFIX}/libexec/${PKG_NAME}/maven2
+ln -sf ${PREFIX}/libexec/${PKG_NAME}/bin/* ${PREFIX}/bin
