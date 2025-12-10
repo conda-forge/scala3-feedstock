@@ -3,7 +3,6 @@
 set -o xtrace -o nounset -o pipefail -o errexit
 
 # Build JAR files with sbt
-cd git
 sbt dist/Universal/packageBin
 
 # Create pom.xml files so maven can be used to download licenses
