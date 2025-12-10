@@ -19,10 +19,45 @@ popd
 
 # Install JAR files
 mkdir -p ${PREFIX}/bin
-mkdir -p ${PREFIX}/libexec/${PKG_NAME}
+mkdir -p ${PREFIX}/libexec/scala3
 
 mv dist/target/universal/scala3-${PKG_VERSION}-bin-SNAPSHOT.zip .
 unzip scala3-${PKG_VERSION}-bin-SNAPSHOT.zip
-cp -r scala3-${PKG_VERSION}-bin-SNAPSHOT/* ${PREFIX}/libexec/${PKG_NAME}
-rm -rf ${PREFIX}/libexec/${PKG_NAME}/maven2
-ln -sf ${PREFIX}/libexec/${PKG_NAME}/bin/* ${PREFIX}/bin
+cp -r scala3-${PKG_VERSION}-bin-SNAPSHOT/* ${PREFIX}/libexec/scala3
+rm -rf ${PREFIX}/libexec/scala3/maven2
+
+tee ${PREFIX}/bin/scala << EOF
+#!/bin/sh
+exec \${CONDA_PREFIX}/libexec/scala3/bin/scala "\$@"
+EOF
+chmod +x ${PREFIX}/bin/scala
+
+tee ${PREFIX}/bin/scalac << EOF
+#!/bin/sh
+exec \${CONDA_PREFIX}/libexec/scala3/bin/scalac "\$@"
+EOF
+chmod +x ${PREFIX}/bin/scalac
+
+tee ${PREFIX}/bin/scaladoc << EOF
+#!/bin/sh
+exec \${CONDA_PREFIX}/libexec/scala3/bin/scaladoc "\$@"
+EOF
+chmod +x ${PREFIX}/bin/scaladoc
+
+tee ${PREFIX}/bin/scala_legacy << EOF
+#!/bin/sh
+exec \${CONDA_PREFIX}/libexec/scala3/bin/scala_legacy "\$@"
+EOF
+chmod +x ${PREFIX}/bin/scala_legacy
+
+tee ${PREFIX}/bin/scala.cmd << EOF
+call %CONDA_PREFIX%\libexec\scala3\bin\scala.bat %*
+EOF
+
+tee ${PREFIX}/bin/scalac.cmd << EOF
+call %CONDA_PREFIX%\libexec\scala3\bin\scalac.bat %*
+EOF
+
+tee ${PREFIX}/bin/scaladoc.cmd << EOF
+call %CONDA_PREFIX%\libexec\scala3\bin\scaladoc.bat %*
+EOF
