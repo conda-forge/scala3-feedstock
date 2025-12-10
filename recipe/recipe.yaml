@@ -8,9 +8,9 @@ package:
 source:
   - git: https://github.com/lampepfl/dotty
     tag: ${{ version }}
-    target_directory: git
   - url: https://github.com/scala/scala3/archive/refs/tags/${{ version }}.tar.gz
     sha256: a36c4dc4e5a058be22c2a5c1bfe00a24e9f7d22bd53f9f4e1d834cafbd55c7ff
+    target_directory: archive
 
 build:
   number: 0
