@@ -1,5 +1,5 @@
 context:
-  version: 3.7.4
+  version: "3.10.0"
 
 package:
   name: scala3
@@ -9,7 +9,7 @@ source:
   - git: https://github.com/lampepfl/dotty
     tag: ${{ version }}
   - url: https://github.com/scala/scala3/archive/refs/tags/${{ version }}.tar.gz
-    sha256: a36c4dc4e5a058be22c2a5c1bfe00a24e9f7d22bd53f9f4e1d834cafbd55c7ff
+    sha256: 0ad55a264ce9f96282ec7fb336c78db078d271eb5565318f119106bfa468341d
     target_directory: archive
 
 build:
